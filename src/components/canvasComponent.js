@@ -1,8 +1,7 @@
 import React from 'react'
 import DefaultShape from './defaultShape'
 import fetch from 'isomorphic-fetch'
-// import io from 'socket.io'
-///import other canvas elements as components or stateless functions
+import _ from 'lodash'
 const socket = io();
 
 export default class CanvasComponent extends React.Component {
@@ -23,20 +22,34 @@ export default class CanvasComponent extends React.Component {
     })
   }
 
+  postDrawing(coords) {
+    return fetch('http://localhost:8080/draw', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          drawCoords: coords
+        })
+      })
+  }
+
   handleClick(ev){
     ev.preventDefault();
-   // const body = JSON.stringify({a: 1, b: 2})
-
-   fetch('http://localhost:8080/draw', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        drawCoords: [ev.pageX, ev.pageY-55]
+    const coords = [ev.pageX, ev.pageY-55]
+    fetch('http://localhost:8080/draw', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          drawCoords: [ev.pageX, ev.pageY-55]
+        })
       })
-    })
+    //this.postDrawing(coords)
+    // _.debounce(this.postDrawing(coords), 300)
    
     // this.setState({
     //   shapes: [...this.state.shapes, [ev.pageX, ev.pageY-55]]
